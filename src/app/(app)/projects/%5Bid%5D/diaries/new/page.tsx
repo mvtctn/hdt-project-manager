@@ -223,7 +223,7 @@ export default function NewDiary() {
   return (
     <div className="flex-1 flex flex-col bg-[#050811] min-h-screen text-slate-100 relative">
       <div className="radial-glow" style={{ top: "10%", right: "10%", opacity: 0.3 }}></div>
-      <Navbar />
+
 
       <main className="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 space-y-6 relative z-10">
         

@@ -95,9 +95,7 @@ export default function Projects() {
   return (
     <div className="flex-1 flex flex-col bg-[#050811] min-h-screen text-slate-100 relative">
       <div className="radial-glow" style={{ top: "0%", right: "10%", opacity: 0.4 }}></div>
-      <Navbar />
-
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-10">
+      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 relative z-10">
         
         {/* Tiêu đề & Nút Tạo mới */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
