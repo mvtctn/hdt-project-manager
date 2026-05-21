@@ -17,33 +17,37 @@ export default function Navbar() {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case "super_admin":
-        return { text: "Super Admin", class: "bg-red-500/20 text-red-400 border border-red-500/30" };
+        return { text: "Super Admin", class: "bg-rose-100 text-rose-700 border-rose-200" };
       case "tenant_admin":
-        return { text: "Admin Doanh nghiệp", class: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" };
+        return { text: "Admin Doanh nghiệp", class: "bg-emerald-100 text-emerald-700 border-emerald-200" };
       case "pm":
-        return { text: "Project Manager", class: "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30" };
+        return { text: "Project Manager", class: "bg-indigo-100 text-indigo-700 border-indigo-200" };
       case "engineer":
-        return { text: "Kỹ sư hiện trường", class: "bg-amber-500/20 text-amber-400 border border-amber-500/30" };
+        return { text: "Kỹ sư hiện trường", class: "bg-amber-100 text-amber-700 border-amber-200" };
       case "inspector":
-        return { text: "Giám sát / Chủ đầu tư", class: "bg-pink-500/20 text-pink-400 border border-pink-500/30" };
+        return { text: "Giám sát / CĐT", class: "bg-pink-100 text-pink-700 border-pink-200" };
       default:
-        return { text: "Thành viên", class: "bg-slate-500/20 text-slate-400" };
+        return { text: "Thành viên", class: "bg-slate-100 text-slate-700 border-slate-200" };
     }
   };
 
   const roleInfo = profile ? getRoleLabel(profile.role) : { text: "", class: "" };
 
   return (
-    <nav className="glass-nav px-6 py-4 flex items-center justify-between">
+    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       {/* Brand & logo */}
       <div className="flex items-center gap-3">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-teal-400 flex items-center justify-center text-white font-black text-xl shadow-md shadow-sky-500/10">
+        <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <img src="/logo.png" alt="Hydrotech Logo" className="h-8 w-auto object-contain" onError={(e) => {
+            e.currentTarget.style.display = 'none';
+            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+          }} />
+          <div className="hidden w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-teal-400 flex items-center justify-center text-white font-black text-lg shadow-md shadow-sky-500/10">
             H
           </div>
-          <div className="hidden sm:block">
-            <h1 className="text-sm font-black text-white tracking-tight leading-none">HYDROTECH</h1>
-            <p className="text-[10px] text-sky-400 font-bold uppercase tracking-wider mt-0.5">
+          <div className="hidden sm:block border-l border-slate-300 pl-3 ml-1">
+            <h1 className="text-sm font-black text-slate-800 tracking-tight leading-none">HYDROTECH</h1>
+            <p className="text-[10px] text-sky-600 font-bold uppercase tracking-wider mt-0.5">
               {tenant ? tenant.name : "PLATFORM"}
             </p>
           </div>
@@ -51,23 +55,23 @@ export default function Navbar() {
       </div>
 
       {/* Nav Links */}
-      <div className="flex items-center gap-1 sm:gap-4">
+      <div className="flex items-center gap-1 sm:gap-2">
         <Link
           href="/dashboard"
-          className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
             pathname === "/dashboard"
-              ? "text-sky-400 bg-sky-500/10"
-              : "text-slate-400 hover:text-slate-200"
+              ? "text-sky-700 bg-sky-50"
+              : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
           }`}
         >
           Bảng tin
         </Link>
         <Link
           href="/projects"
-          className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+          className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
             pathname.startsWith("/projects")
-              ? "text-sky-400 bg-sky-500/10"
-              : "text-slate-400 hover:text-slate-200"
+              ? "text-sky-700 bg-sky-50"
+              : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
           }`}
         >
           Dự án
@@ -77,10 +81,10 @@ export default function Navbar() {
         {profile && (profile.role === "super_admin" || profile.role === "tenant_admin") && (
           <Link
             href={profile.role === "super_admin" ? "/admin/system" : "/admin/tenant"}
-            className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
               pathname.startsWith("/admin")
-                ? "text-sky-400 bg-sky-500/10"
-                : "text-slate-400 hover:text-slate-200"
+                ? "text-sky-700 bg-sky-50"
+                : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
             Quản trị
@@ -89,19 +93,19 @@ export default function Navbar() {
       </div>
 
       {/* User profile & actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <div className="hidden md:flex flex-col items-end">
-          <span className="text-xs font-bold text-white leading-none">
+          <span className="text-sm font-bold text-slate-800 leading-none">
             {profile ? profile.full_name : "Kỹ sư"}
           </span>
-          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full mt-1 ${roleInfo.class}`}>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border mt-1 ${roleInfo.class}`}>
             {roleInfo.text}
           </span>
         </div>
 
         <button
           onClick={handleSignOut}
-          className="p-2 sm:px-3 sm:py-2 text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/30 rounded-lg transition-all"
+          className="p-2 sm:px-4 sm:py-2 text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all"
         >
           Đăng xuất
         </button>

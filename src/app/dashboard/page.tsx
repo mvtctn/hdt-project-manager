@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const { user, profile, loading, isMock } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [diaries, setDiaries] = useState<ConstructionDiary[]>([]);
@@ -21,7 +21,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (user) {
-      // Trong môi trường demo/mock hoặc live: nạp dữ liệu
       setProjects(getProjects());
       setDiaries(getDiaries());
     }
@@ -29,10 +28,10 @@ export default function Dashboard() {
 
   if (loading || !user) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#090e1a] text-white">
+      <div className="flex-1 flex items-center justify-center min-h-screen bg-slate-50 text-slate-800">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-400 font-medium">Đang tải bảng tin...</p>
+          <p className="text-slate-500 font-medium">Đang tải bảng tin...</p>
         </div>
       </div>
     );
@@ -45,74 +44,86 @@ export default function Dashboard() {
   const planningProjects = projects.filter((p) => p.status === "planning").length;
 
   return (
-    <div className="flex-1 flex flex-col bg-[#050811] min-h-screen text-slate-100 relative">
-      {/* Glare effects */}
-      <div className="radial-glow" style={{ top: "0%", left: "10%", opacity: 0.5 }}></div>
-      
+    <div className="flex-1 flex flex-col bg-slate-50 min-h-screen text-slate-900 font-sans">
       <Navbar />
 
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-10">
+      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Banner chào mừng & Hành động nhanh */}
-        <div className="glass-panel p-6 bg-gradient-to-r from-sky-950/20 via-indigo-950/20 to-teal-950/20 border-sky-500/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Xin chào, {profile?.full_name || "Kỹ sư"}!
+        <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+          {/* Subtle decoration */}
+          <div className="absolute right-0 top-0 w-64 h-64 bg-gradient-to-bl from-sky-100 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+          
+          <div className="relative z-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
+              Xin chào, {profile?.full_name || "Kỹ sư"}! 👋
             </h2>
-            <p className="text-sm text-slate-400 mt-1 max-w-xl">
-              Hệ thống PWA đã được kích hoạt. Bạn đang sử dụng công cụ quản lý tích hợp của công ty **Hydrotech** tại hiện trường.
+            <p className="text-sm text-slate-500 mt-2 max-w-xl leading-relaxed">
+              Chào mừng trở lại trung tâm quản lý dự án Hydrotech. Bạn có thể theo dõi tiến độ thi công, quản lý hồ sơ và cập nhật nhật ký trực tiếp từ đây.
             </p>
           </div>
           
-          <div className="flex gap-3">
-            {profile?.role === "engineer" && (
+          <div className="flex gap-3 relative z-10">
+            {profile && ["engineer", "super_admin", "tenant_admin", "pm"].includes(profile.role) && (
               <button
                 onClick={() => router.push(`/projects/${projects[0]?.id || "proj-1"}/diaries/new`)}
-                className="btn-primary px-5 py-3 rounded-xl text-sm"
+                className="bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-600/20 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2"
               >
-                📝 Viết Nhật Ký Hôm Nay
+                <span>📝</span> Viết Nhật Ký
               </button>
             )}
             <Link
               href="/projects"
-              className="btn-secondary px-5 py-3 rounded-xl text-sm font-semibold flex items-center justify-center"
+              className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-sm px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2"
             >
-              📂 Xem các Dự án
+              <span>📂</span> Quản lý Dự án
             </Link>
           </div>
         </div>
 
         {/* Khối Thống kê */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="glass-panel p-5 border-slate-800/80 bg-slate-900/30 flex flex-col justify-between">
-            <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Tổng số Dự án</span>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-3xl font-black text-white">{totalProjects}</span>
-              <span className="text-xs text-sky-400 font-bold">dự án</span>
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">📊</div>
+              <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Tổng Dự án</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-slate-800">{totalProjects}</span>
+              <span className="text-sm text-slate-500 font-medium">dự án</span>
             </div>
           </div>
           
-          <div className="glass-panel p-5 border-sky-500/10 bg-sky-950/10 flex flex-col justify-between">
-            <span className="text-[10px] font-black uppercase text-sky-400 tracking-wider">Đang thi công</span>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-3xl font-black text-sky-400">{ongoingProjects}</span>
-              <span className="text-xs text-slate-400 font-bold">dự án</span>
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-sky-50 flex items-center justify-center text-sky-600">⚡</div>
+              <span className="text-xs font-bold uppercase text-sky-600 tracking-wider">Đang thi công</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-slate-800">{ongoingProjects}</span>
+              <span className="text-sm text-slate-500 font-medium">dự án</span>
             </div>
           </div>
 
-          <div className="glass-panel p-5 border-emerald-500/10 bg-emerald-950/10 flex flex-col justify-between">
-            <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Đã hoàn thành</span>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-3xl font-black text-emerald-400">{completedProjects}</span>
-              <span className="text-xs text-slate-400 font-bold">dự án</span>
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">✅</div>
+              <span className="text-xs font-bold uppercase text-emerald-600 tracking-wider">Hoàn thành</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-slate-800">{completedProjects}</span>
+              <span className="text-sm text-slate-500 font-medium">dự án</span>
             </div>
           </div>
 
-          <div className="glass-panel p-5 border-amber-500/10 bg-amber-950/10 flex flex-col justify-between">
-            <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider">Đang lập kế hoạch</span>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-3xl font-black text-amber-400">{planningProjects}</span>
-              <span className="text-xs text-slate-400 font-bold">dự án</span>
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">📋</div>
+              <span className="text-xs font-bold uppercase text-amber-600 tracking-wider">Lập kế hoạch</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-slate-800">{planningProjects}</span>
+              <span className="text-sm text-slate-500 font-medium">dự án</span>
             </div>
           </div>
         </section>
@@ -123,46 +134,55 @@ export default function Dashboard() {
           {/* Cột trái: Dự án nổi bật (2/3 chiều rộng) */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-2 h-4 bg-sky-500 rounded-sm"></span> Dự án đang triển khai
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                Dự án đang triển khai
               </h3>
-              <Link href="/projects" className="text-xs font-bold text-sky-400 hover:underline">
-                Xem tất cả &gt;
+              <Link href="/projects" className="text-sm font-semibold text-sky-600 hover:text-sky-700 transition-colors">
+                Xem tất cả &rarr;
               </Link>
             </div>
 
             <div className="space-y-4">
               {projects.map((proj) => (
-                <div key={proj.id} className="glass-panel glass-panel-hover p-6 border-slate-800/60 bg-slate-900/20 relative overflow-hidden">
+                <div key={proj.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
                   {/* Status badge */}
-                  <div className="absolute top-4 right-4">
-                    {proj.status === "ongoing" && <span className="badge badge-info">Đang thi công</span>}
-                    {proj.status === "completed" && <span className="badge badge-success">Đã hoàn thành</span>}
-                    {proj.status === "planning" && <span className="badge badge-warning">Lập kế hoạch</span>}
+                  <div className="absolute top-6 right-6">
+                    {proj.status === "ongoing" && <span className="bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Đang thi công</span>}
+                    {proj.status === "completed" && <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Đã hoàn thành</span>}
+                    {proj.status === "planning" && <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Lập kế hoạch</span>}
                   </div>
 
-                  <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">{proj.code}</span>
-                  <h4 className="text-base font-black text-white mt-1 leading-snug">{proj.name}</h4>
-                  <p className="text-xs text-slate-400 mt-2 line-clamp-2">{proj.description}</p>
+                  <div className="flex flex-col items-start pr-32">
+                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-widest mb-2">{proj.code}</span>
+                    <h4 className="text-lg font-bold text-slate-900 leading-tight group-hover:text-sky-700 transition-colors">{proj.name}</h4>
+                  </div>
+                  <p className="text-sm text-slate-500 mt-2 line-clamp-2 leading-relaxed">{proj.description}</p>
 
-                  <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-800/40 text-xs text-slate-500 font-medium">
-                    <div>
-                      <span>📍 Địa điểm: </span>
-                      <span className="text-slate-300 font-bold">{proj.location}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5 pt-5 border-t border-slate-100 text-sm">
+                    <div className="flex items-start gap-2">
+                      <span className="text-slate-400 mt-0.5">📍</span>
+                      <div>
+                        <div className="text-xs text-slate-400 font-medium">Địa điểm</div>
+                        <div className="text-slate-700 font-semibold">{proj.location}</div>
+                      </div>
                     </div>
-                    <div>
-                      <span>🤝 Đối tác: </span>
-                      <span className="text-slate-300 font-bold">{proj.client}</span>
+                    <div className="flex items-start gap-2">
+                      <span className="text-slate-400 mt-0.5">🤝</span>
+                      <div>
+                        <div className="text-xs text-slate-400 font-medium">Đối tác/Khách hàng</div>
+                        <div className="text-slate-700 font-semibold">{proj.client}</div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between mt-6 pt-2">
-                    <div className="text-[10px] font-bold text-slate-500">
-                      Thời hạn: {proj.start_date} đến {proj.end_date}
+                  <div className="flex items-center justify-between mt-6 bg-slate-50 -mx-6 -mb-6 px-6 py-4 border-t border-slate-100">
+                    <div className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      {proj.start_date} &rarr; {proj.end_date}
                     </div>
                     <Link
                       href={`/projects/${proj.id}`}
-                      className="px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-sky-400 text-xs font-bold rounded-lg transition-all"
+                      className="px-4 py-2 bg-white hover:bg-sky-50 border border-slate-200 hover:border-sky-200 text-sky-700 text-xs font-bold rounded-lg transition-all shadow-sm"
                     >
                       Chi tiết dự án
                     </Link>
@@ -174,8 +194,8 @@ export default function Dashboard() {
 
           {/* Cột phải: Nhật ký thi công mới nhất (1/3 chiều rộng) */}
           <div className="space-y-6">
-            <h3 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <span className="w-2 h-4 bg-teal-500 rounded-sm"></span> Nhật ký gần đây
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              Nhật ký gần đây
             </h3>
 
             <div className="space-y-4">
@@ -183,41 +203,44 @@ export default function Dashboard() {
                 diaries.map((diary) => {
                   const proj = projects.find((p) => p.id === diary.project_id);
                   return (
-                    <div key={diary.id} className="glass-panel p-5 border-slate-800 bg-slate-900/10 space-y-3">
+                    <div key={diary.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col gap-3 group">
                       <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                          📅 {diary.report_date}
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                          {diary.report_date}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-semibold">{diary.weather_temp}</span>
+                        <span className="text-[11px] text-slate-500 font-semibold bg-slate-100 px-2 py-1 rounded">{diary.weather_temp}</span>
                       </div>
                       
                       <div>
-                        <h4 className="text-xs font-black text-white leading-none">
+                        <h4 className="text-sm font-bold text-slate-800 leading-snug group-hover:text-sky-700 transition-colors">
                           {proj ? proj.name : "Dự án Hydrotech"}
                         </h4>
-                        <span className="text-[10px] text-slate-500 mt-1 block">Người lập: {diary.engineer_name}</span>
+                        <span className="text-[11px] text-slate-500 mt-1 block font-medium">Người lập: <span className="text-slate-700">{diary.engineer_name}</span></span>
                       </div>
 
-                      <p className="text-xs text-slate-400 line-clamp-3 italic">
+                      <p className="text-sm text-slate-600 line-clamp-3 bg-slate-50 p-3 rounded-lg border border-slate-100 italic">
                         &quot;{diary.work_descriptions}&quot;
                       </p>
 
-                      <div className="pt-2 border-t border-slate-800/40 flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">
-                          📷 {diary.photos?.length || 0} Ảnh hiện trường
+                      <div className="pt-3 mt-1 border-t border-slate-100 flex justify-between items-center">
+                        <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                          {diary.photos?.length || 0} Ảnh đính kèm
                         </span>
                         <Link
                           href={`/projects/${diary.project_id}?tab=diaries`}
-                          className="text-xs font-bold text-sky-400 hover:underline"
+                          className="text-xs font-bold text-sky-600 hover:text-sky-700 hover:underline"
                         >
-                          Xem nhật ký
+                          Xem chi tiết
                         </Link>
                       </div>
                     </div>
                   );
                 })
               ) : (
-                <div className="glass-panel p-8 text-center text-xs text-slate-500">
+                <div className="bg-white p-8 rounded-2xl border border-dashed border-slate-300 text-center text-sm text-slate-500 flex flex-col items-center gap-2">
+                  <span className="text-3xl">📭</span>
                   Chưa có nhật ký thi công nào được ghi nhận.
                 </div>
               )}
