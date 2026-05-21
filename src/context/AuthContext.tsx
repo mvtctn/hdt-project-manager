@@ -53,6 +53,14 @@ const MOCK_TENANT: Tenant = {
 };
 
 const MOCK_PROFILES: Record<string, Profile> = {
+  "info@hydrotech.vn": {
+    id: "mock-main-admin-uuid",
+    tenant_id: MOCK_TENANT.id,
+    email: "info@hydrotech.vn",
+    full_name: "Admin Hydrotech",
+    role: "super_admin",
+    status: "active",
+  },
   "superadmin@hydrotech.vn": {
     id: "mock-super-admin-uuid",
     tenant_id: MOCK_TENANT.id,
